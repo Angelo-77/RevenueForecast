@@ -47,13 +47,13 @@ Export or print the report if needed.
 
 Note: You must allow macro execution for the VBA automation to function properly.
 
-##🖼️ Screenshots
+## 🖼️ Screenshots
 
-![Home](https://github.com/user-attachments/assets/4c588a27-a6a8-4479-95fc-c6a145375b37)
-![FormulaExample](https://github.com/user-attachments/assets/f854f588-de72-47a7-b378-1402b54ab149)
-![FormulaExample](https://github.com/user-attachments/assets/127ca6ce-976e-4480-aac6-19ae2d7b7336)
-![FormulaExample](https://github.com/user-attachments/assets/b210d3f8-b411-4c0c-834c-2d32eec67e90)
-![MacroMenu](https://github.com/user-attachments/assets/d6adf076-256b-4461-86d4-6992c93af852)
+<Home Page> ![Home](https://github.com/user-attachments/assets/4c588a27-a6a8-4479-95fc-c6a145375b37)
+<FormulaExamples> ![FormulaExample](https://github.com/user-attachments/assets/f854f588-de72-47a7-b378-1402b54ab149)
+<FormulaExamples> ![FormulaExample](https://github.com/user-attachments/assets/127ca6ce-976e-4480-aac6-19ae2d7b7336)
+<FormulaExamples> ![FormulaExample](https://github.com/user-attachments/assets/b210d3f8-b411-4c0c-834c-2d32eec67e90)
+<MacroMenu>![MacroMenu](https://github.com/user-attachments/assets/d6adf076-256b-4461-86d4-6992c93af852)
 
 
 ## 👩‍💻VBA Code
