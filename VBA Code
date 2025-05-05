@@ -1,0 +1,1506 @@
+## 👩‍💻VBA Code
+
+#⚠ Important: Please note that the client is Brazilian, so some of the texts and comments within the VBA code are written in Portuguese.
+
+'Developed by Miguel Angelo
+
+ Sub IMPORTA_LD()
+       
+    'Nome LD Elfa
+     
+    Dim caminho As String
+    Dim ArquivoPad As String
+    Dim wb As Workbook
+    Dim fileName As String
+    Dim Encontrar As Range
+    Dim Linha_Atual As Long
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim rng As Range
+    
+    
+    'Define nome e caminho
+      
+    ArquivoPad = ThisWorkbook.Name
+    
+    caminho = ThisWorkbook.Path & "\"
+    
+    Competência = Sheets("1.Menu").Range("C8")
+    
+    
+    Set ws = Sheets("3.BaseDados_ELFA")
+    Set tbl = ws.ListObjects("fLDELFA")
+    
+    'Limpa base de dados Elfa
+    
+    Sheets("3.BaseDados_ELFA").Activate
+    
+    If tbl.AutoFilter.FilterMode Then
+       tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    Range("A2:BD" & ULT_LIN - 1).ClearContents
+    
+    'Primeiro arquivo no caminho
+    
+    fileName = Dir(caminho & "*.xlsx")
+    
+    'Loop inside files
+        
+     Do While fileName <> ""
+        Debug.Print "Processando Arquivo" & fileName
+        
+    'Diferencia se começa com LD
+    
+    
+     If Left(Trim(fileName), 2) = "LD" Then
+      
+     
+     Set wb = Workbooks.Open(caminho & fileName)
+    
+     If Not wb Is Nothing Then
+        
+     Range("b5").Select
+     Selection.CurrentRegion.Select
+     Selection.Copy
+
+    'Cola arquivo na base de Dados
+
+    Windows(ArquivoPad).Activate
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    Sheets("3.BaseDados_ELFA").Activate
+    
+    Range("A" & ULT_LIN).PasteSpecial xlPasteValues
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.CutCopyMode = False
+    
+    Calculate
+    Calculate
+    
+    End If
+    
+    'Fecha Arquivo
+    
+    wb.Activate
+    Application.CutCopyMode = False
+    wb.Close SaveChanges:=False
+    
+    End If
+    
+    
+    End If
+    
+    
+    'Próximo Arquivo
+    
+     fileName = Dir()
+     
+     Loop
+         
+     'Ajustes Finais de BaseDados
+       
+     Set Encontrar = Columns("A").Find("")
+     If Not Encontrar Is Nothing Then
+     ULT_LIN = Encontrar.Row
+     End If
+    
+    
+    'Exclui Cabeçalhos
+    
+    tbl.Range.AutoFilter Field:=2, Criteria1:="CLIENTE"
+    On Error Resume Next
+    Set rng = tbl.DataBodyRange.SpecialCells(xlCellTypeVisible)
+    On Error GoTo 0
+    
+    If Not rng Is Nothing Then
+    For Each Cell In rng
+    If Not Cell.EntireRow.Hidden Then
+    Cell.EntireRow.Delete
+    End If
+    Next Cell
+    End If
+    
+    
+    If tbl.AutoFilter.FilterMode Then
+    tbl.AutoFilter.ShowAllData
+    End If
+    
+    ' Elimina Inconsistências Avanços Anteriores
+    
+    Range("X1:X" & ULT_LIN - 1).Select
+    Selection.Replace What:=".", Replacement:=",", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    Selection.Replace What:="n/a", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    Selection.Replace What:="", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    
+    
+    Application.CalculateFull
+    
+    MsgBox ("LDs Importadas com Sucesso")
+    
+
+End Sub
+
+   Sub IMPORTA_UNICO()
+
+    'Define varíavel
+       
+    Dim caminho As String
+    
+        
+    'Define nome e caminho
+    
+    ArquivoPad = ThisWorkbook.Name
+    
+    caminho = ThisWorkbook.Path & "\"
+    
+
+    'Define competência analisada
+    
+    
+    Competência = Sheets("1.Menu").Range("C8")
+    
+    
+    
+    'Limpa base de dados Elfa
+    
+    
+    
+    Sheets("3.BaseDados_ELFA").Activate
+    
+    
+    Range("A2:BD100000").ClearContents
+   
+   
+   'Define LD única a ser importada
+   
+   
+    Sheets("1.menu").Activate
+    
+    
+    Workbooks.Open (caminho & Range("c9"))
+    
+    
+    Range("b5").Select
+    
+    
+    Selection.CurrentRegion.Select
+    Selection.Copy
+
+    
+    
+    'Cola arquivo na base de Dados
+    
+
+    Windows(ArquivoPad).Activate
+    
+    Sheets("3.BaseDados_ELFA").Activate
+    
+    Range("B1").PasteSpecial xlPasteValues
+    
+    
+    
+    'Fecha Arquivo do Importado
+    
+    
+    Sheets("1.menu").Activate
+    
+    Workbooks(Range("c9") & ".xlsx").Activate
+    
+    Application.CutCopyMode = False
+    
+    Windows(ArquivoPad).Activate
+    
+    Sheets("1.menu").Activate
+     
+    Workbooks(Range("c9") & ".xlsx").Close SaveChanges:=False
+    
+    
+    'Cola nome da Empresa
+    
+    Windows(ArquivoPad).Activate
+    
+    Sheets("1.menu").Range("C10").Copy
+    
+    Sheets("3.BaseDados_ELFA").Activate
+    
+    Range("A2").Select
+    
+    
+    'Define a última linha para colocar nome empresa
+    
+    Set Encontrar = Columns("B").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    Linha_Atual = Encontrar.Row
+    End If
+    
+    Range("A2:A" & Linha_Atual - 1).PasteSpecial xlPasteValues
+    
+    
+    Range("b2").Select
+    
+    
+    Application.CutCopyMode = False
+     
+     
+   
+   
+   ' Elimina Inconsistências Avanços Anteriores
+    
+
+    Columns("X:X").Select
+    Selection.Replace What:=".", Replacement:=",", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    Selection.Replace What:="n/a", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+    Selection.Replace What:="", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+   MsgBox ("LD Única importada com sucesso!")
+   
+   
+   End Sub
+   
+   Sub CONSOLIDAR_BASE()
+   
+   
+   Dim ws As Worksheet
+   Dim tbl1 As ListObject
+   Dim tbl2 As ListObject
+   Dim tbl3 As ListObject
+   
+   Set ws = Sheets("2. Consolidado Previsão")
+   Set tbl1 = ws.ListObjects("fDisciplina")
+   Set tbl2 = ws.ListObjects("fOSs")
+   Set tbl3 = ws.ListObjects("fAponts")
+   
+   
+   'Limpa Filtros
+   
+   Sheets("2. Consolidado Previsão").Activate
+   
+   If tbl1.AutoFilter.FilterMode Then
+        tbl1.AutoFilter.ShowAllData
+    End If
+    
+   If tbl2.AutoFilter.FilterMode Then
+        tbl2.AutoFilter.ShowAllData
+    End If
+   
+   If tbl3.AutoFilter.FilterMode Then
+        tbl3.AutoFilter.ShowAllData
+    End If
+   
+   
+    'Limpa Base remove duplicados
+    
+    
+    Sheets("7. Remove Duplicados").Activate
+    
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    
+    Range("A1:C" & ULT_LIN - 1).ClearContents
+    
+   
+    Sheets("3.BaseDados_ELFA").Activate
+   
+   
+    Range("a2").Select
+   
+   
+   'Define ultima linha pra copiar informações
+   
+    
+    Set Encontrar = Columns("B").Find("")
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    
+    
+    Range("B2" & ":D" & ULT_LIN - 1).Copy
+    
+    
+    Sheets("7. Remove Duplicados").Activate
+    
+    
+    Range("a1").PasteSpecial xlPasteValues
+    
+    
+    Sheets("3.BaseDados_ELFA").Activate
+     
+     
+     
+     'Remove duplicados com Disciplina
+     
+     Sheets("7. Remove Duplicados").Activate
+     
+     Set Encontrar = Columns("a").Find("")
+     If Not Encontrar Is Nothing Then
+     ULT_LIN = Encontrar.Row
+     End If
+     
+     Range("a1" & ":c" & ULT_LIN - 1).RemoveDuplicates Columns:=Array(1, 2, 3), _
+        Header:=xlNo
+     
+     
+    'Limpa Infos antigas do Planificador
+     
+   
+    Sheets("2. Consolidado Previsão").Activate
+    
+    
+    Set Encontrar = Columns("U").Find("")
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    Range("U2:W" & ULT_LIN - 1).ClearContents
+    
+    Set encontrar2 = Columns("I").Find("")
+    
+    If Not encontrar2 Is Nothing Then
+    
+    ULT_LIN2 = encontrar2.Row
+    
+    End If
+    
+    
+    Range("I2:J" & ULT_LIN2 - 1).ClearContents
+    
+    
+    
+    'Copia infos do remove duplicado (com disciplina)
+    
+    
+    Sheets("7. Remove Duplicados").Activate
+    
+    Set Encontrar = Columns("a").Find("")
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    Range("A1:C" & ULT_LIN - 1).Copy
+    
+    
+    
+    'Imputa informações no planificador - Com Disciplina
+    
+    Sheets("2. Consolidado Previsão").Activate
+    
+    Range("U2").PasteSpecial xlPasteValues
+    
+    Application.CutCopyMode = False
+   
+     
+    'Remove duplicados - sem Disciplina
+    
+    Sheets("7. Remove Duplicados").Activate
+     
+    Set Encontrar = Columns("a").Find("")
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    
+    Range("A1:B" & ULT_LIN - 1).Copy
+    
+    
+    Range("F1").PasteSpecial xlPasteValues
+    
+    Application.CutCopyMode = False
+    
+    Range("F1" & ":G" & ULT_LIN - 1).RemoveDuplicates Columns:=Array(1, 2), _
+        Header:=xlNo
+
+
+
+    'Copia infos - sem Disciplina
+
+    
+    Set Encontrar = Columns("F").Find("")
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    End If
+    
+    
+    Range("F1:G" & ULT_LIN - 1).Copy
+    
+    'Imputa informações no planificador - Sem Disciplina
+    
+    Sheets("2. Consolidado Previsão").Activate
+    
+    
+    Range("I2").PasteSpecial xlPasteValues
+    
+    
+    Application.CutCopyMode = False
+    
+
+   'Atualiza Pivot
+    
+    ActiveSheet.PivotTables("ConsolidPrevisao").PivotCache.Refresh
+
+    MsgBox ("Consolidadação Realizada com Sucesso")
+
+   End Sub
+   Sub ARQUIVOS_FALTANTES()
+   
+    'Dicionário para armazenar arquivos encontrados
+    caminho = ThisWorkbook.Path & "\"
+
+     Set FileList = New Dictionary
+     Set LDs = New Dictionary
+         
+      Debug.Print "Dictionary created"
+     
+     'Avisa sobre arquivos não encontrados na Pasta
+     
+     fileName = Dir(caminho & "*.xlsx")
+     
+     Do While fileName <> ""
+     
+     FileList(LCase(fileName)) = True
+     
+     fileName = Dir()
+     
+     Loop
+    
+     
+     Sheets("BaseCadastro").Activate
+     Set BaseCad = Sheets("BaseCadastro")
+     Set Encontrar = Columns("a").Find("")
+        ULT_LIN = Encontrar.Row
+        
+     MissingFile = ""
+    
+     For Each Cell In BaseCad.Range("A2:A" & ULT_LIN)
+        ExpectedFile = LCase(Trim(Cell.Value))
+        
+     If Not FileList.Exists(ExpectedFile) Then
+        MissingFile = MissingFile & ExpectedFile & vbNewLine
+        
+     End If
+     
+     Next Cell
+     
+     If MissingFile = "" Then
+     MsgBox ("Todos os Arquivos encontrados")
+     
+     Else
+        MsgBox ("Os seguintes arquivos não foram encontrados na Pasta:" & vbNewLine & MissingFile)
+        
+     End If
+     
+     
+End Sub
+
+Sub ARQUIVOS_EXTRAS()
+
+    'Define Caminho
+    
+    caminho = ThisWorkbook.Path & "\"
+
+    'Cria Dict
+    
+    Set ExpectedFiles = New Dictionary
+     
+    Debug.Print "Dictionary created"
+      
+      
+    'Armazena nome de LD para conferência
+
+     Sheets("BaseCadastro").Activate
+     Set BaseCad = Sheets("BaseCadastro")
+     Set Encontrar = Columns("a").Find("")
+     ULT_LIN = Encontrar.Row
+     
+    For Each Cell In BaseCad.Range("A2:A" & ULT_LIN)
+        If LCase(Trim(Cell.Value)) <> "" Then
+         ExpectedFiles(LCase(Trim(Cell.Value))) = True
+        End If
+    Next Cell
+    
+     'Avisa sobre arquivos não encontrados na Pasta
+     
+     fileName = Dir(caminho & "*.xlsx")
+     ExtraFile = ""
+     
+     Do While fileName <> ""
+     If Not ExpectedFiles.Exists(LCase(Trim(fileName))) Then
+        ExtraFile = ExtraFile & fileName & vbNewLine
+     End If
+     
+     fileName = Dir()
+     
+     Loop
+     
+     'Mensagem de Arquivos a Mais
+    
+     If ExtraFile = "" Then
+     MsgBox ("Sem Arquivos Extras")
+     
+     Else
+        MsgBox ("Os Seguintes Arquivos são Extras - Não Contém na BaseCadastro:" & vbNewLine & ExtraFile)
+        
+     End If
+     
+    
+    'Prepare and list contents of the dictionary to display
+    'FileListContents = "Files in the directory:" & vbNewLine
+    'For Each Key In ExpectedFiles.Keys
+    'FileListContents = LCase(FileListContents) & Key & vbNewLine
+    'Next Key
+    'MsgBox FileListContents
+     
+     
+End Sub
+
+Sub IMPORTA_TS()
+    
+    'Define Variaveis
+    
+    Dim caminho As String
+    Dim ArquivoPad As String
+    Dim wb As Workbook
+    Dim fileName As String
+    Dim Encontrar As Range
+    Dim Linha_Atual As Long
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim rng As Range
+    
+    
+    
+    'Define nome e caminho
+    
+    
+    ArquivoPad = ThisWorkbook.Name
+    
+    caminho = ThisWorkbook.Path & "\"
+    
+    Competência = Sheets("1.Menu").Range("C8")
+    
+    Set ws = Sheets("4.TimeSheet")
+    Set tbl = ws.ListObjects("fTS_AP")
+    
+    'Limpa base de dados Elfa
+    
+    Sheets("4.TimeSheet").Activate
+    
+    If tbl.AutoFilter.FilterMode Then
+    tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    ULT_LIN = Encontrar.Row
+    
+    Range("A2:R" & ULT_LIN - 1).ClearContents
+    
+  
+    
+    'Primeiro arquivo no caminho
+    
+    fileName = Dir(caminho & "*.xlsx")
+    
+    'Loop inside files
+        
+     Do While fileName <> ""
+        Debug.Print "Processando Arquivo" & fileName
+        
+    'Diferencia se começa com LD
+    
+     If Left(Trim(fileName), 2) = "TS" Then
+     
+     Set wb = Workbooks.Open(caminho & fileName)
+    
+     If Not wb Is Nothing Then
+        
+     Range("b5").Select
+     Selection.CurrentRegion.Select
+     Selection.Copy
+
+    'Cola arquivo na base de Dados
+    
+    Windows(ArquivoPad).Activate
+    
+    Sheets("4.TimeSheet").Activate
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    Sheets("4.TimeSheet").Activate
+    
+    Range("A" & ULT_LIN).PasteSpecial xlPasteValues
+    
+    End If
+    
+    'Fecha Arquivo
+    
+    wb.Activate
+    
+    Application.CutCopyMode = False
+    
+    wb.Close SaveChanges:=False
+    
+    End If
+    
+    
+    End If
+    
+    
+    'Próximo Arquivo
+    
+     fileName = Dir()
+     
+     Loop
+     
+          
+     'Ajustes Finais de BaseDados
+     
+     
+     Set Encontrar = Columns("A").Find("")
+     If Not Encontrar Is Nothing Then
+     ULT_LIN = Encontrar.Row
+     
+    
+    'Exclui Cabeçalhos
+    
+    tbl.Range.AutoFilter Field:=1, Criteria1:="COLABORADOR"
+    
+    On Error Resume Next
+    Set rng = tbl.DataBodyRange.SpecialCells(xlCellTypeVisible)
+    On Error GoTo 0
+    
+    ' Verificando linhas visiveis
+    
+    If Not rng Is Nothing Then
+    For Each Cell In rng
+    If Not Cell.EntireRow.Hidden Then
+      Cell.EntireRow.Delete
+    End If
+    Next Cell
+    End If
+    
+    If tbl.AutoFilter.FilterMode Then
+    tbl.AutoFilter.ShowAllData
+    
+    End If
+    
+    End If
+    
+    Application.Calculate
+    
+    MsgBox ("TS Importado com Sucesso")
+    
+
+End Sub
+
+Sub IMPORTA_dDOCS()
+
+    'Define Variaveis
+    
+    Dim caminho As String
+    Dim ArquivoPad As String
+    Dim wb As Workbook
+    Dim fileName As String
+    Dim Encontrar As Range
+    Dim Linha_Atual As Long
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim rng As Range
+    
+    
+    'Define nome e caminho
+    
+    
+    ArquivoPad = ThisWorkbook.Name
+    
+    caminho = ThisWorkbook.Path & "\"
+    
+    Competência = Sheets("1.Menu").Range("C8")
+    
+    Set ws = Sheets("6. dDocs")
+    Set tbl = ws.ListObjects("dDOCS")
+    
+    
+    'Limpa base de dados Elfa
+    
+    Sheets("6. dDocs").Activate
+    
+    If tbl.AutoFilter.FilterMode Then
+    tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    ULT_LIN = Encontrar.Row
+    
+    Range("A2:I" & ULT_LIN).ClearContents
+    
+  
+    
+    'Primeiro arquivo no caminho
+    
+    fileName = Dir(caminho & "*.xlsx")
+    
+    'Loop inside files
+        
+     Do While fileName <> ""
+        Debug.Print "Processando Arquivo" & fileName
+        
+    'Diferencia se começa com LD
+    
+     If Trim(fileName) = "CP_dDocs.xlsx" Then
+     
+     Set wb = Workbooks.Open(caminho & fileName)
+    
+     If Not wb Is Nothing Then
+        
+     Range("A1").Select
+     Selection.CurrentRegion.Select
+     Selection.Copy
+
+    'Cola arquivo na base de Dados
+    
+    Windows(ArquivoPad).Activate
+    
+    Sheets("6. dDocs").Activate
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    Sheets("6. dDocs").Activate
+    
+    Range("A" & ULT_LIN).PasteSpecial xlPasteValues
+    
+    End If
+    
+    'Fecha Arquivo
+    
+    wb.Activate
+    
+    Application.CutCopyMode = False
+    
+    wb.Close SaveChanges:=False
+    
+    End If
+    
+    
+    End If
+    
+    
+    'Próximo Arquivo
+    
+     fileName = Dir()
+     
+     Loop
+     
+     'Ajustes Finais de BaseDados
+     
+     
+     Set Encontrar = Columns("A").Find("")
+     If Not Encontrar Is Nothing Then
+     ULT_LIN = Encontrar.Row
+     
+    
+    'Exclui Cabeçalhos
+    
+    
+    tbl.Range.AutoFilter Field:=1, Criteria1:="CLIENTE_NOME"
+    
+    On Error Resume Next
+    Set rng = tbl.DataBodyRange.SpecialCells(xlCellTypeVisible)
+    On Error GoTo 0
+    
+    'Verificando linhas visíveis
+    
+    If Not rng Is Nothing Then
+    For Each Cell In rng
+    If Not Cell.EntireRow.Hidden Then
+        Cell.EntireRow.Delete
+    End If
+    
+    Next Cell
+    
+    End If
+    
+    'Limpando Filtros
+    
+    If tbl.AutoFilter.FilterMode Then
+        tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    End If
+    
+    MsgBox ("dDOCS Importado com Sucesso")
+    
+
+End Sub
+
+Sub IMPORTA_ACOMP_CR()
+
+
+    'Define Variaveis
+    
+    Dim caminho As String
+    Dim ArquivoPad As String
+    Dim wb As Workbook
+    Dim fileName As String
+    Dim Encontrar As Range
+    Dim Linha_Atual As Long
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim rng As Range
+    
+    
+    
+    'Define nome e caminho
+    
+    
+    ArquivoPad = ThisWorkbook.Name
+    
+    caminho = ThisWorkbook.Path & "\"
+    
+    Competência = Sheets("1.Menu").Range("C8")
+    
+    
+    Set ws = Sheets("5. Acomp CR")
+    Set tbl = ws.ListObjects("dAC_CR")
+    
+    'Limpa base de dados Elfa
+    
+    Sheets("5. Acomp CR").Activate
+    
+    If tbl.AutoFilter.FilterMode Then
+        tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    ULT_LIN = Encontrar.Row
+    
+    Range("A2:R" & ULT_LIN).ClearContents
+    
+  
+    
+    'Primeiro arquivo no caminho
+    
+    fileName = Dir(caminho & "*.xlsx")
+    
+    'Loop inside files
+        
+     Do While fileName <> ""
+        Debug.Print "Processando Arquivo" & fileName
+        
+    'Diferencia se começa com LD
+    
+     If Trim(fileName) = "CP_Acomp. Cronograma.xlsx" Then
+     
+     Set wb = Workbooks.Open(caminho & fileName)
+    
+     If Not wb Is Nothing Then
+        
+     Range("A1").Select
+     Selection.CurrentRegion.Select
+     Selection.Copy
+
+    'Cola arquivo na base de Dados
+    
+    Windows(ArquivoPad).Activate
+    
+    Sheets("5. Acomp CR").Activate
+    
+    Set Encontrar = Columns("A").Find("")
+    
+    If Not Encontrar Is Nothing Then
+    
+    ULT_LIN = Encontrar.Row
+    
+    Sheets("5. Acomp CR").Activate
+    
+    Range("A" & ULT_LIN).PasteSpecial xlPasteValues
+    
+    End If
+    
+    'Fecha Arquivo
+    
+    wb.Activate
+    
+    Application.CutCopyMode = False
+    
+    wb.Close SaveChanges:=False
+    
+    End If
+    
+    
+    End If
+    
+    
+    'Próximo Arquivo
+    
+     fileName = Dir()
+     
+     Loop
+     
+          
+     
+     'Ajustes Finais de BaseDados
+     
+     
+     Set Encontrar = Columns("A").Find("")
+     If Not Encontrar Is Nothing Then
+     ULT_LIN = Encontrar.Row
+     
+     End If
+     
+    
+    'Exclui Cabeçalhos
+    
+    tbl.Range.AutoFilter Field:=2, Criteria1:="Valor de Venda"
+    
+    On Error Resume Next
+        
+    Set rng = tbl.DataBodyRange.SpecialCells(xlCellTypeVisible)
+    
+    On Error GoTo 0
+    
+    
+    If Not rng Is Nothing Then
+    For Each Cell In rng
+    If Not Cell.EntireRow.Hidden Then
+        Cell.EntireRow.Delete
+    End If
+    
+    Next Cell
+    
+    End If
+    
+
+    
+    If tbl.AutoFilter.FilterMode Then
+        tbl.AutoFilter.ShowAllData
+    End If
+    
+    
+    
+    MsgBox ("Acompanhamento de Cronogramas Importado com Sucesso")
+    
+
+End Sub
+Sub EXPORTA_GERAL()
+
+   'Define variáveis
+   
+   Dim ws As Worksheet
+   Dim ws1 As Worksheet
+   Dim ws2 As Worksheet
+   Dim tbl1 As ListObject
+   Dim tbl2 As ListObject
+   Dim tbl3 As ListObject
+   Dim tbl4 As ListObject
+   Dim rng As Range
+   Dim caminho As String
+   Dim newWB As Workbook
+   Dim newWB1 As Workbook
+   Dim fileName As String
+   Dim fileName1 As String
+   
+   'Armazena informações nas variáveis
+   Set ws = Sheets("2. Consolidado Previsão")
+   Set ws1 = Sheets("9.ExportaDisciplina")
+   Set ws2 = Sheets("10.ExportaOS")
+   Set tbl1 = ws.ListObjects("fDisciplina")
+   Set tbl2 = ws.ListObjects("fOSs")
+   Set tbl3 = ws.ListObjects("fAponts")
+   
+   caminho = ThisWorkbook.Path & "\"
+   fileName = "Acomp Por Disciplina.xlsx"
+   fileName1 = "Acomp Por OS.xlsx"
+   
+   Sheets("9.ExportaDisciplina").Activate
+   
+   Set encontrar2 = Columns("A").Find("")
+   
+   If Not encontrar2 Is Nothing Then
+   
+   ULT_LIN2 = encontrar2.Row
+   
+   End If
+   
+    'Elimita Filtros Consolidados
+   
+   ws1.AutoFilterMode = False
+   ws2.AutoFilterMode = False
+   
+   Range("A2:C" & ULT_LIN2).ClearContents
+   
+   Range("E2:E" & ULT_LIN2).ClearContents
+
+   
+   'Limpa Filtros
+   
+   Sheets("2. Consolidado Previsão").Activate
+   
+   If tbl1.AutoFilter.FilterMode Then
+        tbl1.AutoFilter.ShowAllData
+    End If
+    
+   If tbl2.AutoFilter.FilterMode Then
+        tbl2.AutoFilter.ShowAllData
+    End If
+   
+   If tbl3.AutoFilter.FilterMode Then
+        tbl3.AutoFilter.ShowAllData
+    End If
+    
+    
+    Set Encontrar = Columns("R").Find("")
+    If Not Encontrar Is Nothing Then
+    ULT_LIN = Encontrar.Row
+    End If
+    
+    
+    'Copia informações de projetos
+    'Cliente + OS
+    
+    ws.Activate
+    
+    Range("U2:V" & ULT_LIN - 1).Copy
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("A2").PasteSpecial xlPasteValues
+    
+    Application.CutCopyMode = False
+    
+    'Disciplina
+    
+    ws.Activate
+    
+    Range("X2:X" & ULT_LIN - 1).Copy
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("C2").PasteSpecial xlPasteValues
+    
+    
+    'Tipo
+    
+    ws.Activate
+    
+    Range("AA2:AA" & ULT_LIN - 1).Copy
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("E2").PasteSpecial xlPasteValues
+
+
+    'Copia informações de Alocação
+    
+    
+    'Cliente + OS
+    
+    ws.Activate
+    
+    Set encontrar4 = Columns("AB").Find("")
+    
+    If Not encontrar4 Is Nothing Then
+    Ult_lin4 = encontrar4.Row
+    End If
+    
+
+    Range("AH2:AI" & Ult_lin4 - 1).Copy
+
+   'Define última linha para colar na aba ExportaGeral
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Set Encontrar1 = Columns("A").Find("")
+    If Not Encontrar1 Is Nothing Then
+    ULT_LIN1 = Encontrar1.Row
+    
+    End If
+    
+    
+    Range("A" & ULT_LIN1).PasteSpecial xlPasteValues
+    
+    Application.CutCopyMode = False
+    
+    
+    'Disciplina
+    
+    ws.Activate
+    
+    Range("AK2:AK" & Ult_lin4 - 1).Copy
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("C" & ULT_LIN1).PasteSpecial xlPasteValues
+    
+    
+    'Tipo
+    
+    ws.Activate
+    
+    Range("AG2:AG" & Ult_lin4 - 1).Copy
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("E" & ULT_LIN1).PasteSpecial xlPasteValues
+    
+    
+    'Arrasta Fórmulas
+    
+    Set encontrar6 = Columns("A").Find("")
+    If Not encontrar6 Is Nothing Then
+    Ult_lin6 = encontrar6.Row
+    End If
+    
+    
+    Range("D2").Copy
+    
+    Range("D3:D" & Ult_lin6 - 1).PasteSpecial (xlPasteFormulas)
+    
+    Application.CutCopyMode = False
+        
+    'Remove Duplicados
+    
+    ws1.Activate
+    
+    
+    'Remove duplicados com Disciplina
+     
+
+    Sheets("9.ExportaDisciplina").Activate
+    
+    
+    'Nova Linha Vazia
+    
+    Set encontrar3 = Columns("A").Find("")
+    If Not encontrar3 Is Nothing Then
+    ULT_LIN3 = encontrar3.Row
+    
+    End If
+    
+    Set rng = Range("A1:E" & ULT_LIN3)
+    
+    Range("A1" & ":E" & ULT_LIN3 - 1).RemoveDuplicates Columns:=Array(1, 2, 3, 5), _
+        Header:=xlYes
+        
+    
+    'Nova Linha Vazia
+    
+    Set encontrar5 = Columns("A").Find("")
+    If Not encontrar5 Is Nothing Then
+    ULT_LIN5 = encontrar5.Row
+    
+    End If
+    
+    Set rng = Range("A1:E" & ULT_LIN5)
+    
+    
+    'Filtra valores 0 ou nulo
+    
+    rng.AutoFilter Field:=4, Criteria1:="=0", Operator:=xlOr, Criteria2:="=-"
+    
+    
+    On Error Resume Next
+    Set rng = rng.Offset(1, 0).Resize(rng.Rows.Count - 1).SpecialCells(xlCellTypeVisible)
+    On Error GoTo 0
+
+    ' Deleta Linhas Filtradas
+    
+    If Not rng Is Nothing Then
+    rng.EntireRow.Delete
+    
+    End If
+
+    ' Remove the filter
+    ws1.AutoFilterMode = False
+    
+    'Exporta Planilha por Disciplina
+    
+    ws1.Copy
+    
+    
+    ' Renomear a planilha
+    
+    Set newWB = ActiveWorkbook
+    
+    
+    newWB.Sheets("9.ExportaDisciplina").Name = "Acomp por Disciplina"
+
+    Set encontrar7 = Columns("A").Find("")
+    
+    If Not encontrar7 Is Nothing Then
+    
+    Ult_lin7 = encontrar7.Row
+    End If
+    
+    
+    Range("D2:D" & Ult_lin7 - 1).Copy
+    Range("D2:D" & Ult_lin7 - 1).PasteSpecial xlPasteValues
+    
+    
+    Application.CutCopyMode = False
+    
+    
+    'Transformando novo WB1 em Tabela
+    
+    
+    newWB.Activate
+    
+    Dim wsNWB As Worksheet
+    Dim DataRangeNB As Range
+    Dim tbl1NB2 As ListObject
+    
+    Set wsNWB = newWB.Sheets("Acomp Por Disciplina")
+    Set DataRangeNB = wsNWB.Range("A1").CurrentRegion
+    Set tbl1NB2 = wsNWB.ListObjects.Add(SourceType:=xlSrcRange, Source:=DataRangeNB, XlListObjectHasHeaders:=xlYes)
+    
+    Columns("A:E").Select
+    wsNWB.Columns("A:E").AutoFit
+    wsNWB.Activate
+    ActiveWindow.DisplayGridlines = False
+    Application.CutCopyMode = False
+    
+    
+    'Salva Arquivo por Disciplina
+    
+    
+    newWB.SaveAs fileName:=caminho & fileName, FileFormat:=xlOpenXMLWorkbook
+    
+    
+    newWB.Close SaveChanges:=True
+    
+
+    'Consolida por OS
+    
+    Sheets("10.ExportaOS").Activate
+    
+    Set encontrar9 = Columns("A").Find("")
+    If Not encontrar9 Is Nothing Then
+    ULT_LIN9 = encontrar9.Row
+    End If
+    
+    'Limpa conteúdo antigo
+    
+    
+    Range("A2:C" & ULT_LIN9 - 1).ClearContents
+    
+    Range("C3:C" & ULT_LIN9 - 1).ClearContents
+    
+    'Copia valores por OS
+    
+    Sheets("9.ExportaDisciplina").Activate
+        
+    Range("A1:B" & Ult_lin7 - 1).Copy
+    
+    Sheets("10.ExportaOS").Activate
+    
+    Range("A1").PasteSpecial xlPasteValues
+    
+    Sheets("9.ExportaDisciplina").Activate
+    
+    Range("E1:E" & Ult_lin7 - 1).Copy
+    
+    Sheets("10.ExportaOS").Activate
+    
+    Range("C1").PasteSpecial xlPasteValues
+    
+    Application.CutCopyMode = False
+    
+    'Remove Duplicados
+    
+     
+    Range("A1" & ":C" & Ult_lin7 - 1).RemoveDuplicates Columns:=Array(1, 2, 3), _
+        Header:=xlYes
+    
+    
+    'Arrasta fórmulas
+    
+    
+    Range("D2").Copy
+    
+    Set encontrar8 = Columns("A").Find("")
+    If Not encontrar8 Is Nothing Then
+    ULT_LIN8 = encontrar8.Row
+    End If
+    
+    Range("D3:D" & ULT_LIN8 - 1).PasteSpecial xlPasteFormulas
+    
+     Application.CutCopyMode = False
+     
+     
+    'Exporta Planilha por OS
+    
+    ws2.Copy
+    
+    ' Renomear a planilha
+    
+    Set newWB1 = ActiveWorkbook
+    
+    
+    newWB1.Sheets("10.ExportaOS").Name = "Acomp por OS"
+    
+    
+    Set encontrar10 = Columns("A").Find("")
+    
+    If Not encontrar10 Is Nothing Then
+    
+    Ult_lin10 = encontrar10.Row
+    End If
+    
+    
+    Range("D2:D" & Ult_lin10 - 1).Copy
+    Range("D2:D" & Ult_lin10 - 1).PasteSpecial xlPasteValues
+    
+    
+    Application.CutCopyMode = False
+    
+    
+    'Transformando novo WB1 em Tabela
+    
+    
+    newWB1.Activate
+    
+    Dim wsNWB1 As Worksheet
+    Dim DataRange As Range
+    Dim tbl1NB1 As ListObject
+    
+    Set wsNWB1 = newWB1.Sheets("Acomp Por OS")
+    Set DataRange = wsNWB1.Range("A1").CurrentRegion
+    Set tbl1NB1 = wsNWB1.ListObjects.Add(SourceType:=xlSrcRange, Source:=DataRange, XlListObjectHasHeaders:=xlYes)
+    
+    
+    Columns("A:D").Select
+    wsNWB1.Columns("A:D").AutoFit
+    wsNWB1.Activate
+    ActiveWindow.DisplayGridlines = False
+    Application.CutCopyMode = False
+    
+    
+    'Salva Arquivo por OS
+    
+    newWB1.SaveAs fileName:=caminho & fileName1, FileFormat:=xlOpenXMLWorkbook
+    
+    newWB1.Close SaveChanges:=True
+      
+    
+    
+MsgBox "Exportado com Sucesso"
+    
+End Sub
+
+Sub CALCULAR()
+
+    ThisWorkbook.RefreshAll
+    Application.CalculateFull
+
+MsgBox "Tudo Importado com Sucesso"
+
+End Sub
+
+Sub IMPORTA_CP()
+
+Call IMPORTA_dDOCS
+Call IMPORTA_ACOMP_CR
+
+
+End Sub
+
+Sub IMPORTA_TUDO()
+
+Dim StarTime As Double
+Dim EndTime As Double
+Dim RunTime As Double
+Dim Minutes As Integer
+Dim Seconds As Double
+
+
+
+StartTime = Timer
+
+
+
+Call IMPORTA_LD
+Call ARQUIVOS_FALTANTES
+Call ARQUIVOS_EXTRAS
+Call IMPORTA_TS
+Call IMPORTA_dDOCS
+Call IMPORTA_ACOMP_CR
+Call CALCULAR
+Call EXPORTA_GERAL
+
+EndTime = Timer
+RunTime = EndTime - StartTime
+
+Minutes = Int(RunTime / 60)
+Seconds = RuntTime Mod 60
+
+MsgBox "WP de Previsão atualizado com Sucesso." & vbNewLine & "Tempo de Duração:" & Minutes & " min" & Format(Seconds, "0.00") & " Sec", vbInformation, "Processo Concluído"
+
+
+End Sub
+
+
+
+
+   
+
+
