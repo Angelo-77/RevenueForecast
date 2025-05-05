@@ -61,7 +61,7 @@ Automated charts and tables
 👩‍💻 VBA Code
 ⚠ Important: Please note that the client is Brazilian, so some of the texts and comments within the VBA code are written in Portuguese.
 
-If you would like to view the VBA code, please click here to access it.
+📁 You can find the VBA code in the [`VBA_Code`](https://github.com/Angelo-77/RevenuForecast/tree/main/VBA_Code) folder.
 
 👨‍💻 Author
 Developed entirely by Miguel Angelo — responsible for logic design, interface layout, and all VBA code.
