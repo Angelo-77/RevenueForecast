@@ -2,7 +2,7 @@
 Overview
 This project is a Revenue Forecast Automation Tool developed in Excel using VBA for an engineering company. It streamlines and accelerates the monthly revenue forecasting process by automating calculations and project evaluations.
 
-Features
+# Features
 🔧 Custom Price Base Creation
 Automatically generates pricing structures for each engineering project based on specific parameters and disciplines.
 
@@ -12,19 +12,18 @@ Implements formulas to evaluate documents produced within each discipline, follo
 ⚙️ Full VBA Automation
 The entire process, from input to forecast generation, is automated through custom-built VBA scripts.
 
-Impact
+# Impact
 ⏱ Time Savings
 Reduced manual processing time by approximately 2 to 3 hours per forecast cycle.
 
 ✅ Consistency & Accuracy
 Eliminated human error and ensured standardized calculations across multiple projects.
 
-Technologies Used
-Excel VBA
-
+# Technologies Used
+Advanced Excel Formulas (Index, Xlook, Nested Functions) and   VBA
 Spreadsheet Design & Formula Logic
 
-🚀 How to Use
+## 🚀 How to Use
 Open the Excel Workbook
 Ensure macros are enabled when opening the file.
 
@@ -40,7 +39,7 @@ Click the “Run Forecast” or equivalent button on the interface.
 
 The VBA script will calculate the projected revenue automatically based on your inputs.
 
-Review Output
+# Review Output
 
 Review the summary table and charts generated.
 
@@ -48,14 +47,13 @@ Export or print the report if needed.
 
 Note: You must allow macro execution for the VBA automation to function properly.
 
-🖼️ Screenshots
-Add screenshots here to illustrate the workflow and output of the tool.
+##🖼️ Screenshots
 
-Project input interface
-
-Revenue summary output
-
-Automated charts and tables
+![Home](https://github.com/user-attachments/assets/4c588a27-a6a8-4479-95fc-c6a145375b37)
+![FormulaExample](https://github.com/user-attachments/assets/f854f588-de72-47a7-b378-1402b54ab149)
+![FormulaExample](https://github.com/user-attachments/assets/127ca6ce-976e-4480-aac6-19ae2d7b7336)
+![FormulaExample](https://github.com/user-attachments/assets/b210d3f8-b411-4c0c-834c-2d32eec67e90)
+![MacroMenu](https://github.com/user-attachments/assets/d6adf076-256b-4461-86d4-6992c93af852)
 
 
 ## 👩‍💻VBA Code
