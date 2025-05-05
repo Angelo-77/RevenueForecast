@@ -57,5 +57,11 @@ Revenue summary output
 
 Automated charts and tables
 
+
+👩‍💻 VBA Code
+⚠ Important: Please note that the client is Brazilian, so some of the texts and comments within the VBA code are written in Portuguese.
+
+If you would like to view the VBA code, please click here to access it.
+
 👨‍💻 Author
-Developed entirely by [Your Name] — responsible for logic design, interface layout, and all VBA code.
+Developed entirely by Miguel Angelo — responsible for logic design, interface layout, and all VBA code.
