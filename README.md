@@ -58,9 +58,9 @@ Revenue summary output
 Automated charts and tables
 
 
-👩‍💻 VBA Code
-⚠ Important: Please note that the client is Brazilian, so some of the texts and comments within the VBA code are written in Portuguese.
+## 👩‍💻VBA Code
 
+⚠ Important: Please note that the client is Brazilian, so some of the texts and comments within the VBA code are written in Portuguese.
 📁 You can find the VBA code in the [`VBA_Code`](https://github.com/Angelo-77/RevenueForecast/blob/298619c12679ebb2fd5bf45ec18442675f144e72/VBA%20Code) folder.
 
 👨‍💻 Author
